@@ -3,7 +3,8 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import Navbar from "./Navbar";
 import Home from "../pages/Home";
 import People from "../pages/People";
-import About from "../pages/About";
+import Planets from "../pages/Planets";
+import Starships from "../pages/Starships";
 
 const Layout = class extends React.Component {
   render() {
@@ -13,7 +14,8 @@ const Layout = class extends React.Component {
           <Navbar />
           <Route exact path="/" component={Home} />
           <Route exact path="/people" component={People} />
-          <Route exact path="/about" component={About} />
+          <Route exact path="/planets" component={Planets} />
+          <Route exact path="/starships" component={Starships} />
         </div>
       </Router>
     );

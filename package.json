@@ -1,7 +1,7 @@
 {
-  "name": "task1",
+  "name": "test",
   "version": "1.0.0",
-  "description": "Full Stack Challenge @ From Rachel",
+  "description": "FlightHub Developer Test",
   "main": "index.html",
   "scripts": {
     "start": "parcel index.html --open",

@@ -35753,6 +35753,8 @@ function (_React$Component) {
     value: function render() {
       return _react.default.createElement("nav", {
         className: "navbar navbar-expand-lg navbar-light bg-light"
+      }, _react.default.createElement("div", {
+        className: "container"
       }, _react.default.createElement(_reactRouterDom.Link, {
         className: "navbar-brand",
         to: "/"
@@ -35779,8 +35781,11 @@ function (_React$Component) {
         to: "/people"
       }, "People"), _react.default.createElement(_reactRouterDom.Link, {
         className: "nav-item nav-link",
-        to: "/about"
-      }, "About"))));
+        to: "/planets"
+      }, "Planets"), _react.default.createElement(_reactRouterDom.Link, {
+        className: "nav-item nav-link",
+        to: "/starships"
+      }, "Starships")))));
     }
   }]);
 
@@ -35888,19 +35893,13 @@ function (_React$Component) {
         return res.json();
       }).then(function (result) {
         _this2.setState({
-          loadingPeople: false
-        });
-
-        _this2.setState({
-          people: result.results
-        });
-
-        _this2.setState({
+          loadingPeople: false,
+          people: result.results,
           totalPages: Math.ceil(result.count / 10)
         });
       }, function (error) {
         _this2.setState({
-          isLoaded: true,
+          loadingPeople: true,
           error: error
         });
       });
@@ -35910,21 +35909,11 @@ function (_React$Component) {
     value: function searchPeople(search) {
       var _this3 = this;
 
-      this.setState({
-        loadingPeople: true
-      });
-      this.setState({
-        searchValue: search
-      });
       fetch("https://swapi.co/api/people/?search=" + search).then(function (res) {
         return res.json();
       }).then(function (result) {
         _this3.setState({
           searchedPeople: result.results
-        });
-
-        _this3.setState({
-          loadingPeople: false
         });
       }, function (error) {
         _this3.setState({
@@ -35944,26 +35933,15 @@ function (_React$Component) {
       fetch("https://swapi.co/api/people/?page=" + page).then(function (res) {
         return res.json();
       }).then(function (result) {
-        console.log(result);
-
         _this4.setState({
-          people: result.results
-        });
-
-        _this4.setState({
-          totalPages: Math.ceil(result.count / 10)
-        });
-
-        _this4.setState({
-          currentPage: page
-        });
-
-        _this4.setState({
+          people: result.results,
+          totalPages: Math.ceil(result.count / 10),
+          currentPage: page,
           loadingPeople: false
         });
       }, function (error) {
         _this4.setState({
-          isLoaded: true,
+          loadingPeople: false,
           error: error
         });
       });
@@ -35973,23 +35951,22 @@ function (_React$Component) {
     value: function getPerson(url) {
       var _this5 = this;
 
+      this.setState({
+        loadingPeople: true
+      });
       fetch(url).then(function (res) {
         return res.json();
       }).then(function (result) {
         _this5.setState({
-          searchValue: result.name
-        });
-
-        _this5.setState({
-          people: [result]
-        });
-
-        _this5.setState({
-          searchedPeople: []
+          searchValue: result.name,
+          people: [result],
+          searchedPeople: [],
+          loadingPeople: false,
+          totalPages: 1
         });
       }, function (error) {
         _this5.setState({
-          isLoaded: true,
+          loadingPeople: false,
           error: error
         });
       });
@@ -36003,7 +35980,6 @@ function (_React$Component) {
       var totalPages = this.state.totalPages;
       var currentPage = this.state.currentPage;
       var searchedPeople = this.state.searchedPeople;
-      var isLoading = this.state.loadingPeople;
 
       var handleGetPeople = function handleGetPeople(pn) {
         _this6.getPeople(pn);
@@ -36013,6 +35989,10 @@ function (_React$Component) {
         var searchTerm = e.target.value;
         clearTimeout(searchTimer);
         createSearchTimer(searchTerm);
+
+        _this6.setState({
+          searchValue: searchTerm
+        });
       };
 
       var createSearchTimer = function createSearchTimer(searchTerm) {
@@ -36045,8 +36025,6 @@ function (_React$Component) {
           className: "card-title"
         }, person.name), _react.default.createElement("li", {
           className: "list-group-item"
-        }, _react.default.createElement("b", null, "Name:"), " ", person.name), _react.default.createElement("li", {
-          className: "list-group-item"
         }, _react.default.createElement("b", null, "Gender:"), " ", person.gender), _react.default.createElement("li", {
           className: "list-group-item"
         }, _react.default.createElement("b", null, "Mass:"), " ", person.mass), _react.default.createElement("li", {
@@ -36063,8 +36041,7 @@ function (_React$Component) {
       };
 
       var PeopleList = function PeopleList(_ref2) {
-        var items = _ref2.items,
-            isLoading = _ref2.isLoading;
+        var items = _ref2.items;
         return _react.default.createElement("div", {
           className: "row positon-relative"
         }, _this6.state.loadingPeople ? _react.default.createElement(_Loader.default, null) : null, items.map(function (person, key) {
@@ -36105,7 +36082,7 @@ function (_React$Component) {
         className: "input-group-text"
       }, _react.default.createElement("i", {
         className: "fas fa-times"
-      }))), _react.default.createElement("ul", {
+      }))), searchedPeople.length > 0 ? _react.default.createElement("ul", {
         className: "list-group shadow-sm"
       }, searchedPeople.map(function (person, key) {
         return _react.default.createElement("li", {
@@ -36117,10 +36094,9 @@ function (_React$Component) {
         }, _react.default.createElement("a", {
           href: "#"
         }, _react.default.createElement("i", null, person.name)));
-      })))))), _react.default.createElement(PeopleList, {
-        items: this.state.people,
-        isLoading: this.state.loadingPeople
-      }), _react.default.createElement("div", {
+      })) : null)))), _react.default.createElement(PeopleList, {
+        items: this.state.people
+      }), this.state.totalPages > 1 ? _react.default.createElement("div", {
         className: "row"
       }, _react.default.createElement("nav", {
         className: "pagination-container"
@@ -36168,7 +36144,7 @@ function (_React$Component) {
         }
       }, _react.default.createElement("span", {
         "aria-hidden": "true"
-      }, "\xBB")))))));
+      }, "\xBB")))))) : null);
     }
   }]);
 
@@ -36217,7 +36193,7 @@ var PeoplePage = function PeoplePage() {
 
 var _default = PeoplePage;
 exports.default = _default;
-},{"react":"node_modules/react/index.js","../components/People":"components/People.js"}],"pages/About.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","../components/People":"components/People.js"}],"components/Planets.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36227,15 +36203,483 @@ exports.default = void 0;
 
 var _react = _interopRequireDefault(require("react"));
 
+var _reactRouterDom = require("react-router-dom");
+
+var _Loader = _interopRequireDefault(require("./Loader"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var AboutPage = function AboutPage() {
-  return _react.default.createElement("div", null, _react.default.createElement("h2", null, "About page"));
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var Planets =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(Planets, _React$Component);
+
+  function Planets(props) {
+    var _this;
+
+    _classCallCheck(this, Planets);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Planets).call(this, props));
+    _this.state = {
+      planets: [],
+      currentPage: 1,
+      totalPages: 1,
+      loadingPlanets: false
+    };
+    _this.getPlanets = _this.getPlanets.bind(_assertThisInitialized(_this));
+    return _this;
+  }
+
+  _createClass(Planets, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      this.setState({
+        loadingPlanets: true
+      });
+      fetch("https://swapi.co/api/planets/?page=1").then(function (res) {
+        return res.json();
+      }).then(function (result) {
+        _this2.setState({
+          loadingPlanets: false,
+          planets: result.results,
+          totalPages: Math.ceil(result.count / 10)
+        });
+      }, function (error) {
+        _this2.setState({
+          loadingPlanets: true,
+          error: error
+        });
+      });
+    }
+  }, {
+    key: "getPlanets",
+    value: function getPlanets(page) {
+      var _this3 = this;
+
+      this.setState({
+        loadingPlanets: true
+      });
+      fetch("https://swapi.co/api/planets/?page=" + page).then(function (res) {
+        return res.json();
+      }).then(function (result) {
+        _this3.setState({
+          planets: result.results,
+          totalPages: Math.ceil(result.count / 10),
+          currentPage: page,
+          loadingPlanets: false
+        });
+      }, function (error) {
+        _this3.setState({
+          loadingPlanets: false,
+          error: error
+        });
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this4 = this;
+
+      var totalPages = this.state.totalPages;
+      var currentPage = this.state.currentPage;
+
+      var handleGetPlanets = function handleGetPlanets(pn) {
+        _this4.getPlanets(pn);
+      };
+
+      var Planet = function Planet(_ref) {
+        var planet = _ref.planet;
+        return _react.default.createElement("div", {
+          className: "card"
+        }, _react.default.createElement(_reactRouterDom.Link, {
+          to: "#"
+        }, _react.default.createElement("div", {
+          className: "card-body"
+        }, _react.default.createElement("ul", {
+          className: "list-group list-group-flush"
+        }, _react.default.createElement("h5", {
+          className: "card-title"
+        }, planet.name), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Rotation period:"), " ", planet.rotation_period), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Orbital period:"), " ", planet.orbital_period), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Diameter:"), " ", planet.diameter), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Climate:"), " ", planet.climate), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Gravity:"), " ", planet.gravity), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Terrain:"), " ", planet.terrain), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Surface water:"), " ", planet.surface_water), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Population:"), " ", planet.population)))));
+      };
+
+      var PlanetsList = function PlanetsList(_ref2) {
+        var items = _ref2.items;
+        return _react.default.createElement("div", {
+          className: "row positon-relative"
+        }, _this4.state.loadingPlanets ? _react.default.createElement(_Loader.default, null) : null, items.map(function (planet, key) {
+          return _react.default.createElement("div", {
+            className: "col-6 col-md-4",
+            key: key
+          }, _react.default.createElement(Planet, {
+            planet: planet
+          }));
+        }));
+      };
+
+      return _react.default.createElement("div", {
+        className: "container margin-top-20"
+      }, _react.default.createElement(PlanetsList, {
+        items: this.state.planets
+      }), this.state.totalPages > 1 ? _react.default.createElement("div", {
+        className: "row"
+      }, _react.default.createElement("nav", {
+        className: "pagination-container"
+      }, _react.default.createElement("ul", {
+        className: "pagination"
+      }, _react.default.createElement("li", {
+        className: "page-item " + (currentPage === 1 ? "disabled" : '')
+      }, _react.default.createElement("button", {
+        className: "page-link",
+        disabled: currentPage === 1,
+        "aria-label": "Previous",
+        onClick: function onClick() {
+          return handleGetPlanets(currentPage - 1);
+        }
+      }, _react.default.createElement("span", {
+        "aria-hidden": "true"
+      }, "\xAB"))), function () {
+        var pages = [];
+
+        var _loop = function _loop(i) {
+          pages.push(_react.default.createElement("li", {
+            className: "page-item" + (currentPage - 1 === i ? ' active' : ''),
+            onClick: function onClick() {
+              return handleGetPlanets(i + 1);
+            },
+            key: i
+          }, _react.default.createElement("button", {
+            className: "page-link"
+          }, i + 1)));
+        };
+
+        for (var i = 0; i < totalPages; i++) {
+          _loop(i);
+        }
+
+        return pages;
+      }(), _react.default.createElement("li", {
+        className: "page-item " + (currentPage === totalPages ? "disabled" : '')
+      }, _react.default.createElement("button", {
+        className: "page-link",
+        disabled: currentPage === totalPages,
+        "aria-label": "Next",
+        onClick: function onClick() {
+          return handleGetPlanets(currentPage + 1);
+        }
+      }, _react.default.createElement("span", {
+        "aria-hidden": "true"
+      }, "\xBB")))))) : null);
+    }
+  }]);
+
+  return Planets;
+}(_react.default.Component);
+
+var _default = Planets;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","react-router-dom":"node_modules/react-router-dom/esm/react-router-dom.js","./Loader":"components/Loader.js"}],"pages/Planets.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _Planets = _interopRequireDefault(require("../components/Planets"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var PlanetsPage = function PlanetsPage() {
+  return _react.default.createElement("div", null, _react.default.createElement(_Planets.default, null));
 };
 
-var _default = AboutPage;
+var _default = PlanetsPage;
 exports.default = _default;
-},{"react":"node_modules/react/index.js"}],"components/Layout.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","../components/Planets":"components/Planets.js"}],"components/Starships.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _reactRouterDom = require("react-router-dom");
+
+var _Loader = _interopRequireDefault(require("./Loader"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } return _assertThisInitialized(self); }
+
+function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
+
+function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, writable: true, configurable: true } }); if (superClass) _setPrototypeOf(subClass, superClass); }
+
+function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || function _setPrototypeOf(o, p) { o.__proto__ = p; return o; }; return _setPrototypeOf(o, p); }
+
+var Starships =
+/*#__PURE__*/
+function (_React$Component) {
+  _inherits(Starships, _React$Component);
+
+  function Starships(props) {
+    var _this;
+
+    _classCallCheck(this, Starships);
+
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Starships).call(this, props));
+    _this.state = {
+      starships: [],
+      currentPage: 1,
+      totalPages: 1,
+      loadingStarships: false
+    };
+    _this.getStarships = _this.getStarships.bind(_assertThisInitialized(_this));
+    return _this;
+  }
+
+  _createClass(Starships, [{
+    key: "componentDidMount",
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      this.setState({
+        loadingStarships: true
+      });
+      fetch("https://swapi.co/api/starships/?page=1").then(function (res) {
+        return res.json();
+      }).then(function (result) {
+        _this2.setState({
+          loadingStarships: false,
+          starships: result.results,
+          totalPages: Math.ceil(result.count / 10)
+        });
+      }, function (error) {
+        _this2.setState({
+          loadingStarships: true,
+          error: error
+        });
+      });
+    }
+  }, {
+    key: "getStarships",
+    value: function getStarships(page) {
+      var _this3 = this;
+
+      this.setState({
+        loadingStarships: true
+      });
+      fetch("https://swapi.co/api/starships/?page=" + page).then(function (res) {
+        return res.json();
+      }).then(function (result) {
+        _this3.setState({
+          starships: result.results,
+          totalPages: Math.ceil(result.count / 10),
+          currentPage: page,
+          loadingStarships: false
+        });
+      }, function (error) {
+        _this3.setState({
+          loadingStarships: false,
+          error: error
+        });
+      });
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      var _this4 = this;
+
+      var totalPages = this.state.totalPages;
+      var currentPage = this.state.currentPage;
+
+      var handleGetStarships = function handleGetStarships(pn) {
+        _this4.getStarships(pn);
+      };
+
+      var Starship = function Starship(_ref) {
+        var starship = _ref.starship;
+        return _react.default.createElement("div", {
+          className: "card"
+        }, _react.default.createElement(_reactRouterDom.Link, {
+          to: "#"
+        }, _react.default.createElement("div", {
+          className: "card-body"
+        }, _react.default.createElement("ul", {
+          className: "list-group list-group-flush"
+        }, _react.default.createElement("h5", {
+          className: "card-title"
+        }, starship.name), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Model:"), " ", starship.model), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Cost in credits:"), " ", starship.cost_in_credits), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Length:"), " ", starship.length), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Max atmosphering speed:"), " ", starship.max_atmosphering_speed), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Crew:"), " ", starship.crew), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Passengers:"), " ", starship.passengers), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Cargo capacity:"), " ", starship.cargo_capacity), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Consumables:"), " ", starship.consumables), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "MGLT:"), " ", starship.MGLT), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Consumables:"), " ", starship.consumables), _react.default.createElement("li", {
+          className: "list-group-item"
+        }, _react.default.createElement("b", null, "Starship class:"), " ", starship.starship_class)))));
+      };
+
+      var StarshipsList = function StarshipsList(_ref2) {
+        var items = _ref2.items;
+        return _react.default.createElement("div", {
+          className: "row positon-relative"
+        }, _this4.state.loadingStarships ? _react.default.createElement(_Loader.default, null) : null, items.map(function (starship, key) {
+          return _react.default.createElement("div", {
+            className: "col-6 col-md-4",
+            key: key
+          }, _react.default.createElement(Starship, {
+            starship: starship
+          }));
+        }));
+      };
+
+      return _react.default.createElement("div", {
+        className: "container margin-top-20"
+      }, _react.default.createElement(StarshipsList, {
+        items: this.state.starships
+      }), this.state.totalPages > 1 ? _react.default.createElement("div", {
+        className: "row"
+      }, _react.default.createElement("nav", {
+        className: "pagination-container"
+      }, _react.default.createElement("ul", {
+        className: "pagination"
+      }, _react.default.createElement("li", {
+        className: "page-item " + (currentPage === 1 ? "disabled" : '')
+      }, _react.default.createElement("button", {
+        className: "page-link",
+        disabled: currentPage === 1,
+        "aria-label": "Previous",
+        onClick: function onClick() {
+          return handleGetStarships(currentPage - 1);
+        }
+      }, _react.default.createElement("span", {
+        "aria-hidden": "true"
+      }, "\xAB"))), function () {
+        var pages = [];
+
+        var _loop = function _loop(i) {
+          pages.push(_react.default.createElement("li", {
+            className: "page-item" + (currentPage - 1 === i ? ' active' : ''),
+            onClick: function onClick() {
+              return handleGetStarships(i + 1);
+            },
+            key: i
+          }, _react.default.createElement("button", {
+            className: "page-link"
+          }, i + 1)));
+        };
+
+        for (var i = 0; i < totalPages; i++) {
+          _loop(i);
+        }
+
+        return pages;
+      }(), _react.default.createElement("li", {
+        className: "page-item " + (currentPage === totalPages ? "disabled" : '')
+      }, _react.default.createElement("button", {
+        className: "page-link",
+        disabled: currentPage === totalPages,
+        "aria-label": "Next",
+        onClick: function onClick() {
+          return handleGetStarships(currentPage + 1);
+        }
+      }, _react.default.createElement("span", {
+        "aria-hidden": "true"
+      }, "\xBB")))))) : null);
+    }
+  }]);
+
+  return Starships;
+}(_react.default.Component);
+
+var _default = Starships;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","react-router-dom":"node_modules/react-router-dom/esm/react-router-dom.js","./Loader":"components/Loader.js"}],"pages/Starships.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _react = _interopRequireDefault(require("react"));
+
+var _Starships = _interopRequireDefault(require("../components/Starships"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var StarshipsPage = function StarshipsPage() {
+  return _react.default.createElement("div", null, _react.default.createElement(_Starships.default, null));
+};
+
+var _default = StarshipsPage;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","../components/Starships":"components/Starships.js"}],"components/Layout.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36253,7 +36697,9 @@ var _Home = _interopRequireDefault(require("../pages/Home"));
 
 var _People = _interopRequireDefault(require("../pages/People"));
 
-var _About = _interopRequireDefault(require("../pages/About"));
+var _Planets = _interopRequireDefault(require("../pages/Planets"));
+
+var _Starships = _interopRequireDefault(require("../pages/Starships"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -36299,8 +36745,12 @@ function (_React$Component) {
         component: _People.default
       }), _react.default.createElement(_reactRouterDom.Route, {
         exact: true,
-        path: "/about",
-        component: _About.default
+        path: "/planets",
+        component: _Planets.default
+      }), _react.default.createElement(_reactRouterDom.Route, {
+        exact: true,
+        path: "/starships",
+        component: _Starships.default
       })));
     }
   }]);
@@ -36310,7 +36760,7 @@ function (_React$Component) {
 
 var _default = Layout;
 exports.default = _default;
-},{"react":"node_modules/react/index.js","react-router-dom":"node_modules/react-router-dom/esm/react-router-dom.js","./Navbar":"components/Navbar.js","../pages/Home":"pages/Home.js","../pages/People":"pages/People.js","../pages/About":"pages/About.js"}],"App.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","react-router-dom":"node_modules/react-router-dom/esm/react-router-dom.js","./Navbar":"components/Navbar.js","../pages/Home":"pages/Home.js","../pages/People":"pages/People.js","../pages/Planets":"pages/Planets.js","../pages/Starships":"pages/Starships.js"}],"App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -36370,7 +36820,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "65059" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56075" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

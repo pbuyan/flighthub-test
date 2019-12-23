@@ -26,13 +26,15 @@ const People = class extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
-          this.setState({loadingPeople: false});
-          this.setState({people: result.results});
-          this.setState({ totalPages: Math.ceil(result.count / 10) });
+          this.setState({
+            loadingPeople: false,
+            people: result.results,
+            totalPages: Math.ceil(result.count / 10)
+          });
         },
         (error) => {
           this.setState({
-            isLoaded: true,
+            loadingPeople: true,
             error
           });
         }
@@ -40,14 +42,11 @@ const People = class extends React.Component {
   }
 
   searchPeople(search) {
-    this.setState({loadingPeople: true});
-    this.setState({searchValue: search});
     fetch("https://swapi.co/api/people/?search=" + search)
         .then(res => res.json())
         .then(
             (result) => {
                 this.setState({searchedPeople: result.results});
-                this.setState({loadingPeople: false});
             },
             (error) => {
                 this.setState({
@@ -64,15 +63,16 @@ const People = class extends React.Component {
       .then(res => res.json())
       .then(
         (result) => {
-            console.log(result)
-          this.setState({people: result.results});
-          this.setState({ totalPages: Math.ceil(result.count / 10) });
-          this.setState({ currentPage: page });
-          this.setState({loadingPeople: false});
+          this.setState({
+            people: result.results,
+            totalPages: Math.ceil(result.count / 10),
+            currentPage: page,
+            loadingPeople: false
+          });
         },
         (error) => {
           this.setState({
-            isLoaded: true,
+            loadingPeople: false,
             error
           });
         }
@@ -80,17 +80,22 @@ const People = class extends React.Component {
   };
 
   getPerson (url) {
+    this.setState({loadingPeople: true});
     fetch(url)
       .then(res => res.json())
       .then(
         (result) => {
-            this.setState({searchValue: result.name});
-            this.setState({people: [result]});
-            this.setState({searchedPeople: []});
+            this.setState({
+              searchValue: result.name,
+              people: [result],
+              searchedPeople: [],
+              loadingPeople: false,
+              totalPages: 1
+            });
         },
         (error) => {
           this.setState({
-            isLoaded: true,
+            loadingPeople: false,
             error
           });
         }
@@ -102,7 +107,6 @@ const People = class extends React.Component {
     const totalPages = this.state.totalPages;
     const currentPage = this.state.currentPage;
     const searchedPeople = this.state.searchedPeople;
-    const isLoading = this.state.loadingPeople
 
     const handleGetPeople = (pn) => {
         this.getPeople(pn)
@@ -112,6 +116,7 @@ const People = class extends React.Component {
         let searchTerm = e.target.value;
         clearTimeout(searchTimer);
         createSearchTimer(searchTerm)
+        this.setState({searchValue: searchTerm});
     }
 
     const createSearchTimer = (searchTerm) => {
@@ -130,12 +135,10 @@ const People = class extends React.Component {
     const Person = ({ person }) => {
       return (
         <div className="card">
-          {/* <PersonImages images={person.images} /> */}
           <Link to="#">
             <div className="card-body">
                 <ul className="list-group list-group-flush">
                     <h5 className="card-title">{person.name}</h5>
-                    <li className="list-group-item"><b>Name:</b> {person.name}</li>
                     <li className="list-group-item"><b>Gender:</b> {person.gender}</li>
                     <li className="list-group-item"><b>Mass:</b> {person.mass}</li>
                     <li className="list-group-item"><b>Height:</b> {person.height}</li>
@@ -150,7 +153,7 @@ const People = class extends React.Component {
       );
     };
 
-    const PeopleList = ({ items, isLoading }) => {
+    const PeopleList = ({ items }) => {
       return (
         <div className="row positon-relative">
             {this.state.loadingPeople ?
@@ -185,18 +188,23 @@ const People = class extends React.Component {
                         </span>
                     </div>
 
-                    <ul className="list-group shadow-sm">
+                    {
+                      searchedPeople.length > 0 ?
+                      <ul className="list-group shadow-sm">
                         {searchedPeople.map((person, key) => (
                             <li className="list-group-item" key={key} onClick={() => handleSelectPerson(person.url)}>
                                 <a href="#"><i>{person.name}</i></a>
                             </li>
                         ))}
-                    </ul>
+                      </ul>: null
+                    }
+                    
                 </div>
               </div>
           </div>
         </div>
-        <PeopleList items={this.state.people} isLoading={this.state.loadingPeople} />
+        <PeopleList items={this.state.people} />
+        { this.state.totalPages > 1 ? 
         <div className="row">
             <nav className="pagination-container">
                 <ul className="pagination">
@@ -222,7 +230,7 @@ const People = class extends React.Component {
                     </li>
                 </ul>
             </nav>
-        </div>
+        </div>: null }
       </div>
     );
   }
