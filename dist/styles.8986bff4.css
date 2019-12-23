@@ -1,0 +1,64 @@
+body {
+    font-size: 1rem;
+}
+.filter-bar {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+
+.card {
+    margin-bottom: 20px;
+}
+
+.card a {
+    text-decoration: none;
+    color: #777777;
+}
+
+.card .list-group-item {
+    border: none;
+    padding: 0.2rem 1.25rem;
+}
+/* .positon-relative {
+    position: relative;
+}
+
+.positon-relative picture {
+    position: relative;
+    top: 0;
+}
+
+.card {
+    border: none;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.card .card-body {
+    color: #000000;
+    text-align: center;
+}
+.card .card-body {
+    padding-bottom: 0;
+}
+.card .card-body p {
+    margin-bottom: 0;
+}
+
+.card .card-body .font-weight-lighter {
+    color: red;
+}
+
+.picture-hover {
+    position: absolute;
+    top: 0;
+    opacity: 0;
+    z-index: 1;
+}
+
+.picture-hover:hover {
+    opacity: 1;
+} */
+
+/*# sourceMappingURL=/styles.8986bff4.css.map */

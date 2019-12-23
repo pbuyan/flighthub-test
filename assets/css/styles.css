@@ -1,0 +1,84 @@
+body {
+    font-size: 0.7rem;
+}
+
+.navbar-brand img {
+    height: 50px;
+}
+
+.search-container {
+    position: relative;
+}
+
+.search-container .list-group {
+    position: absolute;
+    z-index: 10;
+    top: 45px;
+    width: 100%;
+    max-height: 300px;
+    overflow: scroll;
+}
+
+.search-container .list-group .list-group-item {
+    border: none;
+    padding: .55rem 1.25rem;
+}
+
+.search-container .input-group-append {
+    cursor: pointer;
+}
+
+.search-container .list-group .list-group-item:hover {
+    background-color: #fcfcfc;
+}
+
+.search-container .list-group .list-group-item a {
+    text-decoration: none;
+    color: #999999;
+    display: block;
+}
+
+.filter-bar {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+
+.card {
+    margin-bottom: 20px;
+}
+
+.card a {
+    text-decoration: none;
+    color: #777777;
+}
+
+.card .list-group-item {
+    border: none;
+    padding: 0.2rem 1.25rem;
+}
+.loader-container {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, .5);
+
+    align-items: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.loader-container .text-center {
+    margin: auto;
+}
+
+.positon-relative {
+    position: relative;
+}
+
+.pagination-container {
+    display: inline-block;
+    margin: 0 auto;
+}
